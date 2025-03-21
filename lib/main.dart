@@ -1,39 +1,40 @@
 import 'package:flutter/material.dart';
- 
- void main() {
-   runApp(const MyApp());
- }
- 
- class MyApp extends StatelessWidget {
-   const MyApp({Key? key}) : super(key: key);
- 
-   @override
-   Widget build(BuildContext context) {
-     return MaterialApp(
-       debugShowCheckedModeBanner: false,
-       theme: ThemeData(
-         scaffoldBackgroundColor: const Color(0xFF121C2D), // Dark background
-         textTheme: const TextTheme(
-           bodyLarge: TextStyle(
-             fontFamily: 'Poppins', // Ensure the fot is added
-             fontSize: 18,
-             color: Colors.white, // White text
-             fontWeight: FontWeight.w400,
-           ),
-           titleLarge: TextStyle(
-             fontFamily: 'Poppins',
-             fontSize: 24,
-             fontWeight: FontWeight.bold,
-             color: Colors.white, // White text
-           ),
-         ),
-       ),
-       home: const RootPage(),
-     );
-   }
- }
- 
- class RootPage extends StatefulWidget {
+import 'database_helper.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color(0xFF121C2D), 
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 18,
+            color: Colors.white,
+            fontWeight: FontWeight.w400,
+          ),
+          titleLarge: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      home: const RootPage(),
+    );
+  }
+}
+
+class RootPage extends StatefulWidget {
   const RootPage({Key? key}) : super(key: key);
 
   @override
@@ -41,16 +42,37 @@ import 'package:flutter/material.dart';
 }
 
 class _RootPageState extends State<RootPage> {
+  final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _controller = TextEditingController();
-  List<String> _tasks = [];
+  List<Map<String, dynamic>> _tasks = [];
 
-  void _addTask() {
+  @override
+  void initState() {
+    super.initState();
+    _loadTasks();
+  }
+
+  // Load tasks from the db
+  Future<void> _loadTasks() async {
+    final data = await _dbHelper.getTasks();
+    setState(() {
+      _tasks = data;
+    });
+  }
+
+  // Add a task to the db
+  Future<void> _addTask() async {
     if (_controller.text.isNotEmpty) {
-      setState(() {
-        _tasks.add(_controller.text);
-      });
+      await _dbHelper.addTask(_controller.text);
       _controller.clear();
+      await _loadTasks();
     }
+  }
+
+  // Delete a task from the db
+  Future<void> _deleteTask(int id) async {
+    await _dbHelper.deleteTaskById(id);
+    await _loadTasks();
   }
 
   @override
@@ -72,7 +94,7 @@ class _RootPageState extends State<RootPage> {
       ),
       body: Column(
         children: [
-          // Text Input
+          // Input Field
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -109,8 +131,13 @@ class _RootPageState extends State<RootPage> {
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text(
-                          _tasks[index],
+                          _tasks[index]['title'],
                           style: const TextStyle(color: Colors.white),
+                        ),
+                        // Delete button
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _deleteTask(_tasks[index]['id']),
                         ),
                       );
                     },

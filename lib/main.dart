@@ -1,6 +1,48 @@
+import 'package:flutter/material.dart';
+ 
+ void main() {
+   runApp(const MyApp());
+ }
+ 
+ class MyApp extends StatelessWidget {
+   const MyApp({Key? key}) : super(key: key);
+ 
+   @override
+   Widget build(BuildContext context) {
+     return MaterialApp(
+       debugShowCheckedModeBanner: false,
+       theme: ThemeData(
+         scaffoldBackgroundColor: const Color(0xFF121C2D), // Dark background
+         textTheme: const TextTheme(
+           bodyLarge: TextStyle(
+             fontFamily: 'Poppins', // Ensure the fot is added
+             fontSize: 18,
+             color: Colors.white, // White text
+             fontWeight: FontWeight.w400,
+           ),
+           titleLarge: TextStyle(
+             fontFamily: 'Poppins',
+             fontSize: 24,
+             fontWeight: FontWeight.bold,
+             color: Colors.white, // White text
+           ),
+         ),
+       ),
+       home: const RootPage(),
+     );
+   }
+ }
+ 
+ class RootPage extends StatefulWidget {
+  const RootPage({Key? key}) : super(key: key);
+
+  @override
+  State<RootPage> createState() => _RootPageState();
+}
+
 class _RootPageState extends State<RootPage> {
   final TextEditingController _controller = TextEditingController();
-  List<String> _tasks = []; // List to store tasks
+  List<String> _tasks = [];
 
   void _addTask() {
     if (_controller.text.isNotEmpty) {
@@ -30,6 +72,7 @@ class _RootPageState extends State<RootPage> {
       ),
       body: Column(
         children: [
+          // Text Input
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -46,20 +89,32 @@ class _RootPageState extends State<RootPage> {
                 ),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.add, color: Colors.white),
-                  onPressed: _addTask, // Calls the function to add a task
+                  onPressed: _addTask,
                 ),
               ),
             ),
           ),
+
+          // Task List
           Expanded(
-            child: ListView.builder(
-              itemCount: _tasks.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_tasks[index], style: const TextStyle(color: Colors.white)),
-                );
-              },
-            ),
+            child: _tasks.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No tasks added yet!',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _tasks.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(
+                          _tasks[index],
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

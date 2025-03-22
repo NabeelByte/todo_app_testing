@@ -52,7 +52,6 @@ class _RootPageState extends State<RootPage> {
     _loadTasks();
   }
 
-  // Load tasks from the database
   Future<void> _loadTasks() async {
     final data = await _dbHelper.getTasks();
     setState(() {
@@ -60,7 +59,6 @@ class _RootPageState extends State<RootPage> {
     });
   }
 
-  // Add task to the database
   Future<void> _addTask() async {
     if (_controller.text.isNotEmpty) {
       await _dbHelper.addTask(_controller.text);
@@ -69,13 +67,11 @@ class _RootPageState extends State<RootPage> {
     }
   }
 
-  // Delete task by ID
   Future<void> _deleteTask(int id) async {
     await _dbHelper.deleteTaskById(id);
     await _loadTasks();
   }
 
-  // Delete all tasks
   Future<void> _clearAllTasks() async {
     await _dbHelper.deleteAllTasks();
     await _loadTasks();
@@ -149,12 +145,31 @@ class _RootPageState extends State<RootPage> {
                   ),
           ),
 
-          // Clear All Tasks Button
-          TextButton(
-            onPressed: _clearAllTasks,
-            child: const Text(
-              "Clear All Tasks",
-              style: TextStyle(color: Colors.red, fontSize: 16),
+          // Clear All Tasks Button (Styled Yellow)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+            child: SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _clearAllTasks,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFD600), // Yellow color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 2,
+                ),
+                child: const Text(
+                  'Clear All Tasks',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
             ),
           ),
         ],

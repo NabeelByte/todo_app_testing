@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFF121C2D), 
+        scaffoldBackgroundColor: const Color(0xFF121C2D),
         textTheme: const TextTheme(
           bodyLarge: TextStyle(
             fontFamily: 'Poppins',
@@ -52,7 +52,7 @@ class _RootPageState extends State<RootPage> {
     _loadTasks();
   }
 
-  // Load tasks from the db
+  // Load tasks from the database
   Future<void> _loadTasks() async {
     final data = await _dbHelper.getTasks();
     setState(() {
@@ -60,7 +60,7 @@ class _RootPageState extends State<RootPage> {
     });
   }
 
-  // Add a task to the db
+  // Add task to the database
   Future<void> _addTask() async {
     if (_controller.text.isNotEmpty) {
       await _dbHelper.addTask(_controller.text);
@@ -69,9 +69,15 @@ class _RootPageState extends State<RootPage> {
     }
   }
 
-  // Delete a task from the db
+  // Delete task by ID
   Future<void> _deleteTask(int id) async {
     await _dbHelper.deleteTaskById(id);
+    await _loadTasks();
+  }
+
+  // Delete all tasks
+  Future<void> _clearAllTasks() async {
+    await _dbHelper.deleteAllTasks();
     await _loadTasks();
   }
 
@@ -134,7 +140,6 @@ class _RootPageState extends State<RootPage> {
                           _tasks[index]['title'],
                           style: const TextStyle(color: Colors.white),
                         ),
-                        // Delete button
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () => _deleteTask(_tasks[index]['id']),
@@ -142,6 +147,15 @@ class _RootPageState extends State<RootPage> {
                       );
                     },
                   ),
+          ),
+
+          // Clear All Tasks Button
+          TextButton(
+            onPressed: _clearAllTasks,
+            child: const Text(
+              "Clear All Tasks",
+              style: TextStyle(color: Colors.red, fontSize: 16),
+            ),
           ),
         ],
       ),

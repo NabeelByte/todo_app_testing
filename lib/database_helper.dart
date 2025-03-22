@@ -37,4 +37,8 @@ class DatabaseHelper {
     final db = await database;
     await db.delete('todos', where: 'id = ?', whereArgs: [id]);
   }
+  Future<void> deleteAllTasks() async {
+  final db = await database;
+  await db.delete('todos');
+  }
 }
